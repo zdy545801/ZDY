@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>预约管理</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 30px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        select, button {
+            padding: 6px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+
+        .back-link {
+            margin-top: 30px;
+        }
+
+        .back-link a {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .back-link a:hover {
+            background-color: #0056b3;
+        }
+        .status {
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: bold;
+    display: inline-block;
+    font-size: 14px;
+}
+
+.待确认 {
+    background-color: #dc3545; /* 红色 */
+    color: white;
+}
+
+.已确认 {
+    background-color: #ffc107; /* 黄色 */
+    color: black;
+}
+
+.已完成 {
+    background-color: #28a745; /* 绿色 */
+    color: white;
+}
+
+    </style>
+</head>
+<body>
+    <h2>所有预约记录</h2>
+    <table>
+        <tr>
+            <th>用户名</th>
+            <th>日期</th>
+            <th>时间</th>
+            <th>服务</th>
+            <th>车辆信息</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        {% for booking in bookings %}
+        <tr>
+            <td>{{ booking.username }}</td>
+            <td>{{ booking.date }}</td>
+            <td>{{ booking.time }}</td>
+            <td>{{ booking.service }}</td>
+            <td>{{ booking.vehicle_info }}</td>
+            <td><span class="status {{ booking.status }}">{{ booking.status }}</span></td>
+            <td>
+                <form method="POST" action="/admin/update_status">
+                    <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                    <select name="status">
+                        <option value="待确认" {% if booking.status == '待确认' %}selected{% endif %}>待确认</option>
+                        <option value="已确认" {% if booking.status == '已确认' %}selected{% endif %}>已确认</option>
+                        <option value="已完成" {% if booking.status == '已完成' %}selected{% endif %}>已完成</option>
+                    </select>
+                    <button type="submit">更新</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="back-link">
+        <a href="/admin">← 返回管理员主页</a>
+    </div>
+</body>
+</html>

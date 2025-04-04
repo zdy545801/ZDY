@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>预约维修服务</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+        .form-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 30px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .back-btn {
+            display: inline-block;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-box">
+        <h2>预约维修服务</h2>
+        <form method="POST">
+            <label>预约日期：</label>
+            <input type="date" name="date" required>
+
+            <label>预约时间：</label>
+            <input type="time" name="time" required>
+
+            <label>维修服务类型：</label>
+            <input type="text" name="service" placeholder="例如：更换轮胎、机油保养" required>
+
+            <label>车辆信息：</label>
+            <textarea name="vehicle_info" placeholder="车型、车牌等信息" required></textarea>
+
+            <label>维修方式：</label>
+            <select name="repair_method" required>
+                <option value="">请选择维修方式</option>
+                <option value="到店维修">到店维修</option>
+                <option value="上门维修">上门维修</option>
+                <option value="拖车服务">拖车服务</option>
+                <option value="快速保养">快速保养</option>
+                <option value="检测诊断">检测诊断</option>
+            </select>
+
+            <button type="submit">提交预约</button>
+        </form>
+
+        <!-- ✅ 返回主页按钮 -->
+        <p style="text-align:center; margin-top: 20px;">
+            <a href="/dashboard" style="text-decoration: none; background-color: #6c757d; color: white; padding: 10px 20px; border-radius: 6px;">← 返回用户主页</a>
+        </p>
+    </div>
+</body>
+</html>

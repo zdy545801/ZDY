@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>管理员 - 高峰期预约统计</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/echarts/dist/echarts.min.js"></script>
+    <style>
+        body {
+            padding: 30px;
+            background-color: #f4f6f9;
+            font-family: Arial, sans-serif;
+        }
+        h3 {
+            margin-bottom: 30px;
+        }
+        .card {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        table {
+            margin-top: 20px;
+        }
+        #chart {
+            width: 100%;
+            height: 360px;
+        }
+    </style>
+</head>
+<body>
+    <h3>📊 高峰期预约统计（管理员视图）</h3>
+
+    <!-- 图表区域 -->
+    <div class="card">
+        <div id="chart"></div>
+    </div>
+
+    <!-- 明细表格 -->
+    <div class="card">
+        <h5>📋 预约记录明细（按日期排序）</h5>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>📅 日期</th>
+                    <th>⏰ 时间</th>
+                    <th>👥 预约人数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in details %}
+                <tr>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.time }}</td>
+                    <td>{{ row.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/admin" class="btn btn-secondary">← 返回管理员主页</a>
+
+    <script>
+        const chart = echarts.init(document.getElementById('chart'));
+
+        const option = {
+            title: {
+                text: '每日总预约人数',
+                left: 'center'
+            },
+            tooltip: {},
+            xAxis: {
+                type: 'category',
+                data: {{ dates|tojson }},
+                axisLabel: { rotate: 45 }
+            },
+            yAxis: {
+                type: 'value',
+                minInterval: 1
+            },
+            series: [{
+                name: '预约人数',
+                data: {{ counts|tojson }},
+                type: 'bar',
+                itemStyle: {
+                    color: '#FF7F7F'
+                }
+            }]
+        };
+
+        chart.setOption(option);
+    </script>
+</body>
+</html>

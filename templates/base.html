@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}页面标题{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            background-color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .topbar .logo {
+            font-size: 22px;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        .topbar .user-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+        }
+        .topbar img.avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .dropdown {
+            position: absolute;
+            top: 45px;
+            right: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            display: none;
+            flex-direction: column;
+            min-width: 120px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+        .dropdown a {
+            padding: 10px;
+            text-decoration: none;
+            color: #333;
+        }
+        .dropdown a:hover {
+            background-color: #f2f2f2;
+        }
+        .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background-color: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.logo-area {
+    display: flex;
+    align-items: center;
+}
+
+.logo-text {
+    font-size: 28px;
+    font-weight: bold;
+    color: #007BFF;
+    letter-spacing: 1px;
+}
+
+    </style>
+    <script>
+        function toggleDropdown() {
+            const dd = document.getElementById('user-dropdown');
+            dd.style.display = dd.style.display === 'flex' ? 'none' : 'flex';
+        }
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.user-area')) {
+                const dd = document.getElementById('user-dropdown');
+                if (dd) dd.style.display = 'none';
+            }
+        });
+    </script>
+</head>
+<body>
+    <div class="topbar">
+    <div class="logo-area">
+        <div class="logo-text">西大维修</div>
+    </div>
+    <div class="user-area">
+        <img src="{{ url_for('static', filename='avatars/' + user_avatar) }}" class="avatar" onclick="toggleDropdown()">
+        <div class="dropdown" id="user-dropdown">
+            <a href="/account">账户设置</a>
+            <a href="/logout">退出登录</a>
+        </div>
+    </div>
+</div>
+
+
+    <div style="padding: 40px;">
+        {% block content %}{% endblock %}
+    </div>
+</body>
+</html>

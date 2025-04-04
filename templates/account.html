@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>账户设置</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-box {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 450px;
+        }
+
+        h2 {
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin: 12px 0 6px;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .avatar-preview {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .avatar-preview img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+    <form class="form-box" method="POST" enctype="multipart/form-data">
+        <h2>账户设置</h2>
+
+        <label for="username">用户名：</label>
+        <input type="text" name="username" id="username" value="{{ user['username'] }}" required>
+
+        <label for="password">密码：</label>
+        <input type="password" name="password" id="password" value="{{ user['password'] }}" required>
+
+        <label for="avatar">上传头像：</label>
+        <input type="file" name="avatar" id="avatar" accept="image/*">
+
+        {% if user['avatar'] %}
+        <div class="avatar-preview">
+            <p>当前头像：</p>
+            <img src="{{ url_for('static', filename='avatars/' + user['avatar']) }}" alt="当前头像">
+        </div>
+        {% endif %}
+
+        <button type="submit">保存修改</button>
+    </form>
+</body>
+</html>

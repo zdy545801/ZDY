@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>维修预约高峰期分析</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            padding: 30px;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        h3 {
+            margin-bottom: 30px;
+        }
+        .card {
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+        }
+        table {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h3>🚗 当前维修预约高峰期分析（用户视图）</h3>
+
+    <!-- 图表部分 -->
+    <div class="card">
+        <canvas id="peakChart" height="120"></canvas>
+    </div>
+
+    <!-- 表格部分 -->
+    <div class="card">
+        <h5>📋 预约记录明细（按人数排序）</h5>
+        <table class="table table-bordered table-striped">
+            <thead class="table-light">
+                <tr>
+                    <th>📅 日期</th>
+                    <th>⏰ 时间</th>
+                    <th>👥 预约人数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in details %}
+                <tr>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.time }}</td>
+                    <td>{{ row.count }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <a href="/dashboard" class="btn btn-primary mt-4">← 返回主页</a>
+
+    <!-- 图表渲染 -->
+    <script>
+        const labels = {{ labels|tojson }};
+        const counts = {{ counts|tojson }};
+
+        const ctx = document.getElementById('peakChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '预约人数',
+                    data: counts,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        ticks: {
+                            autoSkip: false,
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1  // 保证每格是整数
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

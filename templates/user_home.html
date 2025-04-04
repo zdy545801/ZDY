@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>西大维修用户中心</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        .layout {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 220px;
+            background-color: #3b4b9b;
+            color: white;
+            padding: 20px 10px;
+        }
+        .sidebar h2 {
+            color: #fff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .sidebar a {
+            display: block;
+            padding: 12px 16px;
+            color: white;
+            text-decoration: none;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+        .sidebar a:hover {
+            background-color: #2f3a7a;
+        }
+        .main-content {
+            flex-grow: 1;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+        }
+        .topbar {
+            height: 60px;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+        .topbar .welcome {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .topbar .logout {
+            color: #007bff;
+            text-decoration: none;
+        }
+        .page-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div class="sidebar">
+        <h2>西大维修</h2>
+        <a href="/account">1. 个人中心</a>
+        <a href="/booking">2. 预约维修</a>
+        <a href="/peak_times">3. 查看高峰期</a>
+        <a href="/my_bookings">4. 查看预约</a>
+        <a href="/logout">5. 退出登录</a>
+    </div>
+    <div class="main-content">
+        <div class="topbar">
+            <div class="welcome">欢迎回来，{{ username }}！</div>
+            <a href="/logout" class="logout">退出登录</a>
+        </div>
+        <div class="page-content">
+    <div class="container">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-body d-flex align-items-center">
+                <img src="{{ url_for('static', filename='avatars/' + user_avatar) }}"
+                     class="rounded-circle me-3" style="width: 60px; height: 60px;">
+                <div>
+                    <h4 class="mb-0">欢迎回来，{{ username }}！</h4>
+                    <p class="text-muted">感谢使用西大维修服务系统</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">🛠 快速预约</h5>
+                        <p class="card-text">快速进入预约页面，填写车辆及维修信息。</p>
+                        <a href="/booking" class="btn btn-primary">立即预约</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">📊 查看高峰期</h5>
+                        <p class="card-text">查看近期预约高峰，避开拥堵时段。</p>
+                        <a href="/peak_times" class="btn btn-outline-primary">查看统计</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">📋 我的预约</h5>
+                        <p class="card-text">查看你当前的预约记录和状态，及时跟进处理。</p>
+                        <a href="/my_bookings" class="btn btn-success">查看预约</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+</body>
+</html>

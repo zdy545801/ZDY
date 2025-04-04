@@ -1,0 +1,16 @@
+{% if request.args.get('success') == '1' %}
+    <div style="background-color: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align:center;">
+        ✅ 预约提交成功！
+    </div>
+{% endif %}
+{% extends 'base.html' %}
+{% block title %}用户主页{% endblock %}
+{% block content %}
+    <div class="dashboard">
+        <h2>欢迎回来，{{ username }}！</h2>
+        <div class="btn-group">
+            <a href="/booking">➕ 预约维修</a>
+            <a href="/my_bookings">📋 查看我的预约</a>
+        </div>
+    </div>
+{% endblock %}

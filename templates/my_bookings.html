@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>我的预约记录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 95%;
+            max-width: 1000px;
+            background-color: white;
+            border-collapse: collapse;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .待确认 {
+            background-color: #ffc107;
+        }
+
+        .已确认 {
+            background-color: #17a2b8;
+        }
+
+        .已完成 {
+            background-color: #28a745;
+        }
+
+        button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            background-color: #dc3545;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .back-link {
+            margin-top: 20px;
+        }
+
+        .back-link a {
+            text-decoration: none;
+            color: #007BFF;
+        }
+
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h2>我的预约记录</h2>
+    <table>
+        <tr>
+            <th>日期</th>
+            <th>时间</th>
+            <th>服务类型</th>
+            <th>车辆信息</th>
+            <th>维修方式</th>
+            <th>状态</th>
+            <th>操作</th>
+        </tr>
+        {% for b in bookings %}
+        <tr>
+            <td>{{ b.date }}</td>
+            <td>{{ b.time }}</td>
+            <td>{{ b.service }}</td>
+            <td>{{ b.vehicle_info }}</td>
+            <td>{{ b.repair_method }}</td>
+            <td><span class="status {{ b.status }}">{{ b.status }}</span></td>
+            <td>
+                {% if b.status == '待确认' %}
+                <form method="POST" action="/cancel_booking" onsubmit="return confirm('确认取消该预约？');">
+                    <input type="hidden" name="booking_id" value="{{ b.id }}">
+                    <button type="submit">取消</button>
+                </form>
+                {% else %}
+                <button disabled>不可取消</button>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="back-link">
+        <a href="/dashboard" class="return-btn">← 返回用户主页</a>
+    </div>
+
+</body>
+</html>
