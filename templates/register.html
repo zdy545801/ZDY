@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>用户注册</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
@@ -10,7 +11,6 @@
             font-family: Arial, sans-serif;
             height: 100vh;
             background-color: #f0f0f0;
-
             display: flex;
             justify-content: center;
             align-items: center;
@@ -22,10 +22,18 @@
             border-radius: 12px;
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             text-align: center;
+            width: 100%;
+            max-width: 400px;
         }
 
         h2 {
             margin-bottom: 20px;
+        }
+
+        .form-message {
+            color: red;
+            margin-bottom: 10px;
+            font-size: 14px;
         }
 
         input {
@@ -37,7 +45,8 @@
         }
 
         button {
-            padding: 10px 30px;
+            width: 100%;
+            padding: 10px;
             font-size: 16px;
             border: none;
             background-color: #28a745;
@@ -53,6 +62,7 @@
         a {
             text-decoration: none;
             color: #007BFF;
+            font-size: 14px;
         }
 
         a:hover {
@@ -63,13 +73,45 @@
 <body>
     <div class="register-container">
         <h2>用户注册</h2>
-        <form method="POST">
-            <input type="text" name="username" placeholder="用户名" required><br>
-            <input type="password" name="password" placeholder="密码" required><br>
-            <button type="submit">注册</button>
-        </form>
+
+        {% if message %}
+        <div class="form-message">{{ message }}</div>
+        {% endif %}
+
+       <form method="POST" onsubmit="return validateForm()" autocomplete="off">
+    <!-- 防止自动填充的隐藏字段 -->
+    <input type="text" name="fakeusernameremembered" style="display:none">
+    <input type="password" name="fakepasswordremembered" style="display:none">
+
+    <input type="text" name="username" id="username" placeholder="用户名" required minlength="3" autocomplete="off" value="">
+    <input type="password" name="password" id="password" placeholder="密码" required minlength="6" autocomplete="new-password" value="">
+    <button type="submit">注册</button>
+</form>
+
+
+
+
         <p><a href="/login">已有账号？去登录</a></p>
         <p><a href="/">返回首页</a></p>
     </div>
+
+    <script>
+        function validateForm() {
+            const username = document.getElementById("username").value.trim();
+            const password = document.getElementById("password").value.trim();
+
+            if (username.length < 3) {
+                alert("用户名至少3个字符");
+                return false;
+            }
+
+            if (password.length < 6) {
+                alert("密码至少6个字符");
+                return false;
+            }
+
+            return true;
+        }
+    </script>
 </body>
 </html>

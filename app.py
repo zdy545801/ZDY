@@ -2,6 +2,9 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, session
 from werkzeug.utils import secure_filename
 import sqlite3
+import random
+from flask import session
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -22,31 +25,111 @@ def get_db_connection():
 def index():
     return render_template('index.html')
 
-@app.route('/register', methods=['GET', 'POST'])  #注册
-def register():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        conn = get_db_connection()
-        conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        conn.commit()
-        conn.close()
-        return redirect(url_for('login'))
-    return render_template('register.html')
 
-@app.route('/login', methods=['GET', 'POST'])  # 登录
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    message = None
+    if request.method == 'POST':
+        username = request.form['username'].strip()
+        password = request.form['password'].strip()
+
+        if len(username) < 3 or len(password) < 6:
+            message = "用户名或密码长度不符合要求"
+        else:
+            conn = get_db_connection()
+            existing = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+            if existing:
+                message = "用户名已存在，请换一个"
+            else:
+                conn.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+                conn.commit()
+                conn.close()
+                return redirect(url_for('login', success='1'))
+            conn.close()
+    return render_template('register.html', message=message)
+
+@app.route('/verify_code', methods=['GET', 'POST'])
+def verify_code():
+    error = None
+    if request.method == 'POST':
+        code = request.form['code']
+        if code != session.get('reset_code'):
+            error = '验证码错误'
+        else:
+            return redirect(url_for('reset_password_confirm'))
+    return render_template('verify_code.html', error=error)
+
+@app.route('/forgot', methods=['GET', 'POST'])
+def forgot_password():
+    message = None
+    error = None
+
+    if request.method == 'POST':
+        if 'get_code' in request.form:
+            username = request.form['username'].strip()
+            conn = get_db_connection()
+            user = conn.execute('SELECT * FROM users WHERE username = ?', (username,)).fetchone()
+            conn.close()
+
+            if user:
+                code = str(random.randint(100000, 999999))
+                session['reset_code'] = code
+                session['reset_username'] = username
+                print("验证码为：", code)
+                message = f"验证码已生成：{code}（仅测试显示）"
+            else:
+                error = "用户名不存在"
+
+        elif 'verify_code' in request.form:
+            entered = request.form['verify_code'].strip()
+            if entered == session.get('reset_code'):
+                return redirect(url_for('reset_password_confirm'))
+            else:
+                error = "验证码错误，请重新输入"
+
+    return render_template('forgot.html', message=message, error=error)
+
+
+
+@app.route('/reset_password_confirm', methods=['GET', 'POST'])
+def reset_password_confirm():
+    if 'reset_username' not in session:
+        return redirect(url_for('forgot_password'))
+
+    error = None
+    if request.method == 'POST':
+        pwd = request.form['password']
+        confirm = request.form['confirm']
+        if pwd != confirm:
+            error = '两次密码不一致'
+        elif len(pwd) < 6:
+            error = '密码太短，至少6位'
+        else:
+            conn = get_db_connection()
+            conn.execute('UPDATE users SET password = ? WHERE username = ?', (pwd, session['reset_username']))
+            conn.commit()
+            conn.close()
+            session.pop('reset_username')
+            session.pop('reset_code', None)  # 清理验证码
+            return redirect(url_for('login', reset='1'))
+
+    return render_template('reset_password_confirm.html', error=error)
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form['user_input']
+        password = request.form['pass_input']
         conn = get_db_connection()
         user = conn.execute('SELECT * FROM users WHERE username=? AND password=?',
                             (username, password)).fetchone()
         conn.close()
         if user:
             session['user_id'] = user['id']
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('dashboard', login='1'))
         else:
             error = '用户名或密码错误，请重试'
     return render_template('login.html', error=error)
@@ -55,7 +138,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    return redirect(url_for('index', logout='1'))
 
 @app.route('/account', methods=['GET', 'POST'])
 def account():
@@ -114,35 +197,45 @@ def booking():
         date = request.form['date']
         time = request.form['time']
         service = request.form['service']
-        vehicle_info = request.form['vehicle_info']
+        car_model = request.form['car_model']
+        license_plate = request.form['license_plate']
         repair_method = request.form['repair_method']
 
         conn = get_db_connection()
         conn.execute('''
-            INSERT INTO bookings (user_id, date, time, service, vehicle_info, repair_method)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (user_id, date, time, service, vehicle_info, repair_method))
+            INSERT INTO bookings (user_id, date, time, service, car_model, license_plate, repair_method)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+        ''', (user_id, date, time, service, car_model, license_plate, repair_method))
         conn.commit()
         conn.close()
 
-        # ✅ 添加跳转提示
-        return redirect(url_for('dashboard', success='1'))
+        return redirect(url_for('booking') + '?success=1')
 
     return render_template('booking.html')
 
 
 
-@app.route('/my_bookings') #用户查看预约
+@app.route('/my_bookings')
 def my_bookings():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+
     conn = get_db_connection()
     bookings = conn.execute('''
-        SELECT * FROM bookings WHERE user_id = ?
-        ORDER BY date DESC, time DESC
+        SELECT 
+            b.*, 
+            EXISTS (
+                SELECT 1 FROM reviews r 
+                WHERE r.booking_id = b.id
+            ) AS has_review
+        FROM bookings b
+        WHERE b.user_id = ?
+        ORDER BY b.date DESC, b.time DESC
     ''', (session['user_id'],)).fetchall()
     conn.close()
+
     return render_template('my_bookings.html', bookings=bookings)
+
 
 @app.route('/cancel_booking', methods=['POST'])  #用户取消预约
 def cancel_booking():
@@ -155,7 +248,8 @@ def cancel_booking():
                  (booking_id, session['user_id']))
     conn.commit()
     conn.close()
-    return redirect(url_for('my_bookings'))
+    return redirect(url_for('my_bookings', cancel='1'))
+
 
 @app.route('/peak_times')
 def peak_times():
@@ -192,19 +286,89 @@ def peak_times():
         details=details
     )
 
+@app.route('/notices')
+def user_notices():
+    conn = get_db_connection()
+    notices = conn.execute('SELECT * FROM notices ORDER BY created_at DESC').fetchall()
+    conn.close()
+    return render_template('user_notices.html', notices=notices)
+
+@app.route('/rate/<int:booking_id>', methods=['GET', 'POST'])
+def rate_booking(booking_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+
+    # 防止重复评价
+    existing = conn.execute('SELECT id FROM reviews WHERE booking_id = ?', (booking_id,)).fetchone()
+    if existing:
+        conn.close()
+        return '该预约已提交评价，无需重复。'
+
+    if request.method == 'POST':
+        stars = int(request.form['rating'])
+        comment = request.form.get('feedback', '')
+
+        conn.execute('''
+            INSERT INTO reviews (user_id, booking_id, stars, comment)
+            VALUES (?, ?, ?, ?)
+        ''', (session['user_id'], booking_id, stars, comment))
+
+        # 也可以更新预约状态
+        conn.execute('UPDATE bookings SET status = "已完成" WHERE id = ?', (booking_id,))
+        conn.commit()
+        conn.close()
+        return redirect(url_for('my_bookings', rated='1'))
+
+
+    booking = conn.execute('SELECT * FROM bookings WHERE id = ?', (booking_id,)).fetchone()
+    conn.close()
+    return render_template('rate_booking.html', booking=booking)
+
+
+
+
+@app.route('/my_reviews')
+def my_reviews():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    conn = get_db_connection()
+    reviews = conn.execute('''
+        SELECT 
+            r.stars, 
+            r.comment, 
+            r.date AS review_date, 
+            b.date AS booking_date, 
+            b.time, 
+            b.service
+        FROM reviews r
+        JOIN bookings b ON r.booking_id = b.id
+        WHERE r.user_id = ?
+        ORDER BY r.date DESC
+    ''', (session['user_id'],)).fetchall()
+    conn.close()
+
+    return render_template('my_reviews.html', reviews=reviews)
+
 
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
+    error = None
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('admin_input')
+        password = request.form.get('admin_pass')
+
         if username == 'admin' and password == 'admin123':
             session['admin'] = True
-            return redirect(url_for('admin_home'))  # ✅ 登录成功跳转主页
+            return redirect(url_for('admin_home', success='1'))
         else:
-            return '管理员登录失败'
-    return render_template('admin_login.html')
+            error = '管理员登录失败，请检查账号或密码'
+
+    return render_template('admin_login.html', error=error)
+
 
 @app.route('/admin')
 def admin_home():
@@ -225,15 +389,19 @@ def admin_dashboard():
             b.date,
             b.time,
             b.service,
-            b.vehicle_info,
+            b.car_model,
+            b.license_plate,
             b.status,
             u.username
         FROM bookings b
         JOIN users u ON b.user_id = u.id
+        ORDER BY b.date ASC, b.time ASC, u.username ASC
     ''').fetchall()
     conn.close()
 
     return render_template('admin_dashboard.html', bookings=bookings)
+
+
 
 
 @app.route('/admin/update_status', methods=['POST']) #管理员更新状态
@@ -288,6 +456,47 @@ def admin_peak_times():
         counts=counts,
         details=details  #
     )
+
+@app.route('/admin/reviews')
+def admin_reviews():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+
+    conn = get_db_connection()
+    reviews = conn.execute('''
+        SELECT r.id, r.stars, r.comment, r.date, u.username
+        FROM reviews r
+        JOIN users u ON r.user_id = u.id
+        ORDER BY r.date DESC
+    ''').fetchall()
+    conn.close()
+
+    return render_template('admin_reviews.html', reviews=reviews)
+
+
+@app.route('/admin/news', methods=['GET', 'POST'])
+def admin_news():
+    if not session.get('admin'):
+        return redirect(url_for('admin_login'))
+
+    conn = get_db_connection()
+
+    if request.method == 'POST':
+        title = request.form['title']
+        content = request.form['content']
+        conn.execute('INSERT INTO notices (title, content) VALUES (?, ?)', (title, content))
+        conn.commit()
+        conn.close()
+        # ✅ 关键：发布完后重定向到 GET，携带 success 参数，页面会自动加载最新公告
+        return redirect(url_for('admin_news', success='1'))
+
+    # ✅ GET 请求：从数据库加载最新公告
+    notices = conn.execute('SELECT * FROM notices ORDER BY created_at DESC').fetchall()
+    conn.close()
+
+    return render_template('admin_news.html', notices=notices)
+
+
 
 
 

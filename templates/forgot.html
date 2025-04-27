@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>找回密码</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .forgot-container {
+            background: #fff;
+            padding: 40px 50px;
+            border-radius: 12px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 12px 0;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            font-size: 14px;
+        }
+
+        .form-message {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #28a745;
+        }
+
+        .form-error {
+            color: red;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .captcha-box {
+            display: inline-block;
+            background-color: #f0f0f0;
+            color: #333;
+            font-weight: bold;
+            letter-spacing: 3px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            border: 1px dashed #999;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 15px;
+            color: #007BFF;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="forgot-container">
+    <h2>🔐 找回密码</h2>
+
+    <!-- ✅ 未获取验证码前 -->
+    {% if not message %}
+    <form method="POST">
+        <input type="text" name="username" placeholder="请输入用户名" required>
+        <button type="submit" name="get_code">获取验证码</button>
+    </form>
+    {% endif %}
+
+    <!-- ✅ 显示验证码样式 + 输入框 -->
+    {% if message %}
+        <div class="form-message">验证码如下（仅测试用）：</div>
+        <div class="captcha-box">{{ session.reset_code }}</div>
+
+        <form method="POST">
+            <input type="text" name="verify_code" placeholder="请输入验证码" required>
+            <button type="submit" name="verify_code">验证验证码</button>
+        </form>
+    {% endif %}
+
+    {% if error %}
+        <div class="form-error">{{ error }}</div>
+    {% endif %}
+
+    <a href="/login">← 返回登录</a>
+</div>
+
+</body>
+</html>

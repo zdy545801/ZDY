@@ -7,95 +7,118 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
-            padding: 30px;
-            background-color: #f8f9fa;
-            font-family: Arial, sans-serif;
+            padding: 40px 20px;
+            background: linear-gradient(to bottom right, #e6f0ff, #ffffff);
+            font-family: 'Segoe UI', sans-serif;
         }
+
+        .container {
+            max-width: 960px;
+            margin: auto;
+        }
+
         h3 {
             margin-bottom: 30px;
+            font-weight: bold;
+            text-align: center;
+            color: #2c3e50;
         }
+
         .card {
             padding: 20px;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
             margin-bottom: 30px;
         }
+
         table {
-            margin-top: 20px;
+            margin-top: 15px;
+        }
+
+        .btn-back {
+            display: block;
+            width: fit-content;
+            margin: 0 auto;
+            margin-top: 30px;
+            padding: 10px 30px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h3>🚗 当前维修预约高峰期分析（用户视图）</h3>
+<div class="container">
+    <h3>🚗 当前维修预约高峰期分析</h3>
 
     <!-- 图表部分 -->
     <div class="card">
-        <canvas id="peakChart" height="120"></canvas>
+        <canvas id="peakChart" height="140"></canvas>
     </div>
 
     <!-- 表格部分 -->
     <div class="card">
-        <h5>📋 预约记录明细（按人数排序）</h5>
-        <table class="table table-bordered table-striped">
-            <thead class="table-light">
-                <tr>
-                    <th>📅 日期</th>
-                    <th>⏰ 时间</th>
-                    <th>👥 预约人数</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for row in details %}
-                <tr>
-                    <td>{{ row.date }}</td>
-                    <td>{{ row.time }}</td>
-                    <td>{{ row.count }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <h5 class="mb-3">📋 高峰时段预约明细</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>日期</th>
+                        <th>时间</th>
+                        <th>预约人数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in details %}
+                    <tr>
+                        <td>{{ row.date }}</td>
+                        <td>{{ row.time }}</td>
+                        <td>{{ row.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <a href="/dashboard" class="btn btn-primary mt-4">← 返回主页</a>
+    <a href="/dashboard" class="btn btn-primary btn-back">← 返回用户主页</a>
+</div>
 
-    <!-- 图表渲染 -->
-    <script>
-        const labels = {{ labels|tojson }};
-        const counts = {{ counts|tojson }};
+<!-- 图表渲染 -->
+<script>
+    const labels = {{ labels|tojson }};
+    const counts = {{ counts|tojson }};
 
-        const ctx = document.getElementById('peakChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: '预约人数',
-                    data: counts,
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                }]
+    const ctx = document.getElementById('peakChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: '预约人数',
+                data: counts,
+                backgroundColor: 'rgba(0, 123, 255, 0.7)',
+                borderRadius: 8
+            }]
+        },
+        options: {
+            plugins: {
+                legend: { display: false }
             },
-            options: {
-                plugins: {
-                    legend: { display: false }
-                },
-                scales: {
-                    x: {
-                        ticks: {
-                            autoSkip: false,
-                            maxRotation: 45,
-                            minRotation: 45
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        stepSize: 1  // 保证每格是整数
+            scales: {
+                x: {
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 45,
+                        minRotation: 45
                     }
+                },
+                y: {
+                    beginAtZero: true,
+                    stepSize: 1
                 }
             }
-        });
-    </script>
+        }
+    });
+</script>
 </body>
 </html>

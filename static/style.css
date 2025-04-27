@@ -42,3 +42,30 @@ a {
 a:hover {
     text-decoration: underline;
 }
+.form-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+#cancelToast {
+    display: none;
+    position: fixed;
+    top: 30px;
+    right: 30px;
+    background-color: #dc3545;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    z-index: 9999;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-10px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}

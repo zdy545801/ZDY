@@ -33,47 +33,126 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            font-size: 16px;
+        }
+        button:disabled {
+            background-color: #999;
+        }
+        .form-message {
+            color: red;
+            margin-bottom: 10px;
+            font-weight: bold;
         }
         .back-btn {
-            display: inline-block;
             text-align: center;
             margin-top: 20px;
+        }
+
+        /* ✅ 成功提示框样式 */
+        #successToast {
+            display: none;
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background-color: #28a745;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            z-index: 9999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            animation: fadeInOut 3s ease-in-out;
+        }
+
+        @keyframes fadeInOut {
+            0% { opacity: 0; transform: translateY(-10px); }
+            10% { opacity: 1; transform: translateY(0); }
+            90% { opacity: 1; transform: translateY(0); }
+            100% { opacity: 0; transform: translateY(-10px); }
         }
     </style>
 </head>
 <body>
-    <div class="form-box">
-        <h2>预约维修服务</h2>
-        <form method="POST">
-            <label>预约日期：</label>
-            <input type="date" name="date" required>
+<div class="form-box">
+    <h2>预约维修服务</h2>
 
-            <label>预约时间：</label>
-            <input type="time" name="time" required>
+    {% if message %}
+        <div class="form-message">{{ message }}</div>
+    {% endif %}
 
-            <label>维修服务类型：</label>
-            <input type="text" name="service" placeholder="例如：更换轮胎、机油保养" required>
+    <form method="POST" onsubmit="return handleBooking(this)">
+        <label>预约日期：</label>
+        <input type="date" name="date" required>
 
-            <label>车辆信息：</label>
-            <textarea name="vehicle_info" placeholder="车型、车牌等信息" required></textarea>
+        <label>预约时间：</label>
+        <input type="time" name="time" required step="600" min="08:00" max="20:00">
 
-            <label>维修方式：</label>
-            <select name="repair_method" required>
-                <option value="">请选择维修方式</option>
-                <option value="到店维修">到店维修</option>
-                <option value="上门维修">上门维修</option>
-                <option value="拖车服务">拖车服务</option>
-                <option value="快速保养">快速保养</option>
-                <option value="检测诊断">检测诊断</option>
-            </select>
+        <label>维修服务类型：</label>
+        <input type="text" name="service" placeholder="例如：更换轮胎、机油保养" required>
 
-            <button type="submit">提交预约</button>
-        </form>
+        <label>车型：</label>
+        <input type="text" name="car_model" placeholder="如：本田雅阁" required>
 
-        <!-- ✅ 返回主页按钮 -->
-        <p style="text-align:center; margin-top: 20px;">
-            <a href="/dashboard" style="text-decoration: none; background-color: #6c757d; color: white; padding: 10px 20px; border-radius: 6px;">← 返回用户主页</a>
-        </p>
+        <label>车牌号：</label>
+        <input type="text" name="license_plate" placeholder="如：桂A12345" required>
+
+        <label>维修方式：</label>
+        <select name="repair_method" required>
+            <option value="">请选择维修方式</option>
+            <option value="到店维修">到店维修</option>
+            <option value="上门维修">上门维修</option>
+            <option value="拖车服务">拖车服务</option>
+            <option value="快速保养">快速保养</option>
+            <option value="检测诊断">检测诊断</option>
+        </select>
+
+        <button type="submit" id="submitBtn">提交预约</button>
+    </form>
+
+    <div class="back-btn">
+        <a href="/dashboard" style="text-decoration: none; background-color: #6c757d; color: white; padding: 10px 20px; border-radius: 6px;">← 返回用户主页</a>
     </div>
+</div>
+
+<!-- ✅ 成功预约提示框 -->
+<div id="toastSuccess" class="toast-success">✅ 预约已成功提交！</div>
+
+<style>
+.toast-success {
+    position: fixed;
+    top: 30px;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #007bff;
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.4s ease, transform 0.3s ease;
+}
+.toast-success.show {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('success') === '1') {
+        const toast = document.getElementById("toastSuccess");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
+
 </body>
 </html>

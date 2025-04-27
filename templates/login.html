@@ -23,7 +23,7 @@
             box-shadow: 0 0 15px rgba(0,0,0,0.1);
             text-align: center;
             width: 100%;
-            max-width: 460px;
+            max-width: 400px;
         }
 
         h2 {
@@ -37,21 +37,14 @@
 
         input {
             width: 100%;
-            font-size: 16px;
-            padding: 14px 15px;
+            padding: 10px;
             margin-bottom: 15px;
             border: 1px solid #ccc;
-            border-radius: 6px;
-            box-sizing: border-box;
-        }
-
-        input::placeholder {
-            color: #888;
-            font-size: 14px;
+            border-radius: 5px;
         }
 
         button {
-            padding: 12px 30px;
+            padding: 10px 30px;
             font-size: 16px;
             border: none;
             background-color: #007BFF;
@@ -79,18 +72,113 @@
     <div class="login-container">
         <h2>用户登录</h2>
 
-        {% if error %}
-        <div class="error-message">{{ error }}</div>
-        {% endif %}
-
-        <form method="POST">
-            <input type="text" name="username" placeholder="请输入用户名" required>
-            <input type="password" name="password" placeholder="请输入密码" required>
+        <form method="POST" autocomplete="off">
+            <input type="text" name="user_input" autocomplete="off" placeholder="请输入用户名" required><br>
+            <input type="password" name="pass_input" autocomplete="new-password" placeholder="请输入密码" required><br>
             <button type="submit">登录</button>
         </form>
 
+        {% if request.args.get('reset') == '1' %}
+            <p style="color:green;">🎉 密码重置成功，请登录</p>
+        {% endif %}
+
+        {% if error %}
+        <div style="color: red; margin-top: 10px;">{{ error }}</div>
+        {% endif %}
+
+        <script>
+        function validateLoginForm() {
+        const user = document.getElementById("login-username").value.trim();
+        const pass = document.getElementById("login-password").value.trim();
+        if (user.length < 3 || pass.length < 6) {
+            alert("用户名或密码长度不符合要求！");
+            return false;
+        }
+        return true;
+        }
+        </script>
+        <p><a href="/forgot">忘记密码？点击找回</a></p>
         <p>还没有账号？<a href="/register">点击注册</a></p>
         <p><a href="/">返回首页</a></p>
     </div>
+
+<!-- ✅ 注册成功提示框 -->
+<div id="registerToast" class="toast-box">🎉 注册成功，请登录！</div>
+
+<style>
+.toast-box {
+    position: fixed;
+    top: 30px;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #28a745;
+    color: white;
+    padding: 14px 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+}
+.toast-box.show {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "1") {
+        const toast = document.getElementById("registerToast");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
+<!-- ✅ 密码重置成功提示 -->
+<div id="resetToast" class="toast-box">🎉 密码已成功重置，请重新登录！</div>
+
+<style>
+.toast-box {
+    position: fixed;
+    top: 30px;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #28a745;
+    color: white;
+    padding: 14px 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+}
+.toast-box.show {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("reset") === "1") {
+        const toast = document.getElementById("resetToast");
+        toast.classList.add("show");
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
+
 </body>
 </html>

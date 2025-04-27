@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>系统公告</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background-color: #f9f9f9;
+        }
+        .notice {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .notice-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .notice-time {
+            font-size: 13px;
+            color: gray;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>📢 系统公告</h2>
+    {% for n in notices %}
+    <div class="notice">
+        <div class="notice-title">{{ n.title }}</div>
+        <div class="notice-time">{{ n.created_at }}</div>
+        <p>{{ n.content }}</p>
+    </div>
+    {% endfor %}
+    <div style="margin-top: 40px;">
+    <a href="/dashboard" style="
+        display: inline-block;
+        background-color: #007BFF;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: bold;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    ">
+        ← 返回用户主页
+    </a>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>公告管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .notice-wrapper {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .form-box {
+            width: 300px;
+        }
+
+        .notice-card {
+            width: 300px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+
+        .notice-card h5 {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        .notice-card small {
+            color: #888;
+            font-size: 12px;
+        }
+
+        .notice-card p {
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+        .back-btn {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="notice-wrapper">
+    <!-- 发布公告 -->
+    <div class="form-box">
+        <h5>📢 发布新公告</h5>
+        <form method="POST">
+            <input type="text" name="title" class="form-control mb-3" placeholder="公告标题" required>
+            <textarea name="content" class="form-control mb-3" rows="4" placeholder="公告内容..." required></textarea>
+            <button type="submit" class="btn btn-primary w-100">发布</button>
+        </form>
+    </div>
+
+    <!-- 已发布公告（动态展示） -->
+    <div class="notice-card">
+        <h5>📁 已发布公告</h5>
+        {% for n in notices %}
+        <div class="mb-3">
+            <strong>{{ n.title }}</strong><br>
+            <small>{{ n.created_at }}</small>
+            <p>{{ n.content }}</p>
+        </div>
+        {% else %}
+        <p class="text-muted">暂无公告</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- 返回首页按钮 -->
+<div class="back-btn text-center">
+    <a href="/admin" class="btn btn-secondary mt-4">← 返回首页</a>
+</div>
+
+<!-- ✅ 公告发布成功提示框 -->
+<div id="newsToast" class="toast-box">📢 公告发布成功！</div>
+
+<style>
+.toast-box {
+    position: fixed;
+    top: 30px;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #28a745;
+    color: white;
+    padding: 14px 30px;
+    font-size: 16px;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.5s ease, transform 0.3s ease;
+}
+.toast-box.show {
+    opacity: 1;
+    transform: translateX(50%) translateY(0);
+}
+</style>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "1") {
+        const toast = document.getElementById("newsToast");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
+
+</body>
+</html>

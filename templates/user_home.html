@@ -64,17 +64,38 @@
             padding: 30px;
             overflow-y: auto;
         }
+        .toast-box {
+            position: fixed;
+            top: 30px;
+            right: 50%;
+            transform: translateX(50%);
+            background-color: #28a745;
+            color: white;
+            padding: 14px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            z-index: 9999;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+        }
+        .toast-box.show {
+            opacity: 1;
+            transform: translateX(50%) translateY(0);
+        }
     </style>
 </head>
 <body>
 <div class="layout">
     <div class="sidebar">
         <h2>西大维修</h2>
-        <a href="/account">1. 个人中心</a>
-        <a href="/booking">2. 预约维修</a>
-        <a href="/peak_times">3. 查看高峰期</a>
-        <a href="/my_bookings">4. 查看预约</a>
-        <a href="/logout">5. 退出登录</a>
+        <a href="/account">个人中心</a>
+        <a href="/booking">预约维修</a>
+        <a href="/peak_times">查看高峰期</a>
+        <a href="/my_bookings">查看预约</a>
+        <a href="/my_reviews">我的评价</a>
+        <a href="/notices">公告</a>
+        <a href="/logout">退出登录</a>
     </div>
     <div class="main-content">
         <div class="topbar">
@@ -129,8 +150,51 @@
         </div>
     </div>
 </div>
+        <!-- 我的评价卡片 -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">⭐ 我的评价</h5>
+                <p class="card-text">查看你对维修服务的历史评分和反馈。</p>
+                <a href="/my_reviews" class="btn btn-warning">查看评价</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+        <div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">📢 系统公告</h5>
+                <p class="card-text">查看平台最新公告、通知、节假日安排等重要信息。</p>
+                <a href="/notices" class="btn btn-primary">查看公告</a>
+            </div>
+        </div>
+    </div>
+</div>
 
     </div>
 </div>
+
+<!-- ✅ 登录成功提示 -->
+<div id="loginToast" class="toast-box">✅ 登录成功，欢迎回来！</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("login") === "1") {
+        const toast = document.getElementById("loginToast");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
+
 </body>
 </html>

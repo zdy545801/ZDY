@@ -61,8 +61,66 @@
         }
         .page-content {
             flex-grow: 1;
-            padding: 30px;
+            padding: 40px;
             overflow-y: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .welcome-card {
+            background-color: #fff;
+            padding: 40px 50px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+        .welcome-card h2 {
+            font-size: 30px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .welcome-card p {
+            font-size: 17px;
+            color: #555;
+        }
+        .welcome-card ul {
+            text-align: left;
+            margin-top: 25px;
+            font-size: 16px;
+            color: #444;
+            line-height: 1.8;
+            padding-left: 20px;
+        }
+        .welcome-card ul li {
+            margin-bottom: 10px;
+        }
+        .welcome-card .tip {
+            margin-top: 25px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        /* ✅ 登录成功提示框样式 */
+        .toast-box {
+            position: fixed;
+            top: 30px;
+            right: 50%;
+            transform: translateX(50%);
+            background-color: #28a745;
+            color: white;
+            padding: 14px 30px;
+            font-size: 16px;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            z-index: 9999;
+            transition: opacity 0.5s ease, transform 0.3s ease;
+        }
+        .toast-box.show {
+            opacity: 1;
+            transform: translateX(50%) translateY(0);
         }
     </style>
 </head>
@@ -70,10 +128,10 @@
 <div class="layout">
     <div class="sidebar">
         <h2>西大维修</h2>
-        <a href="/admin/dashboard">首页</a>
-        <a href="/admin/users">用户管理</a>
-        <a href="/admin/bookings">预约管理</a>
+        <a href="/admin">首页</a>
+        <a href="/admin/dashboard">预约管理</a>
         <a href="/admin/peak_times">高峰期统计</a>
+        <a href="/admin/reviews">用户评价</a>
         <a href="/admin/news">公告管理</a>
         <a href="/logout">退出登录</a>
     </div>
@@ -83,11 +141,37 @@
             <a href="/logout" class="logout">退出登录</a>
         </div>
         <div class="page-content">
-            <!-- 这里是每页的内容，后续可插入表格/统计/卡片 -->
-            <h3>后台首页</h3>
-            <p>这里可以展示预约统计、最近操作、公告等等内容。</p>
+            <div class="welcome-card">
+                <h2>🎉 欢迎进入西大维修后台管理系统</h2>
+                <p>感谢您使用西大维修平台，以下是您可以进行的常用操作：</p>
+                <ul>
+                    <li>📋 <strong>预约管理：</strong> 管理用户提交的预约信息，更新处理状态。</li>
+                    <li>📊 <strong>高峰期统计：</strong> 查看每日预约人数分布，识别高峰时间段。</li>
+                    <li>🧾 <strong>用户评价：</strong> 查看用户对服务的评价，做到改善。</li>
+                    <li>📢 <strong>公告管理：</strong> 添加/发布系统维护、节假日安排等公告信息。</li>
+                </ul>
+                <div class="tip">💡 小贴士：请使用左侧导航栏快速切换模块，如有疑问请联系系统管理员邮箱：zdy0610@gmail.com。</div>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- ✅ 登录成功提示框 -->
+<div id="adminLoginToast" class="toast-box">✅ 管理员登录成功，欢迎回来！</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("success") === "1") {
+        const toast = document.getElementById("adminLoginToast");
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+            window.history.replaceState({}, document.title, window.location.pathname);
+        }, 2500);
+    }
+});
+</script>
 </body>
 </html>

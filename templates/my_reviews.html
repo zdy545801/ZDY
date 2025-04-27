@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>我的评价记录</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom right, #e6f0ff, #f4f4f4);
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 95%;
+            max-width: 1000px;
+            background-color: white;
+            border-collapse: collapse;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding: 14px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: #007BFF;
+            color: white;
+        }
+
+        tr:hover {
+            background-color: #f1f9ff;
+        }
+
+        .stars {
+            color: gold;
+            font-size: 18px;
+        }
+
+        .back-link {
+            margin-top: 30px;
+        }
+
+        .return-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            transition: 0.2s ease-in-out;
+        }
+
+        .return-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h2>我的服务评价</h2>
+
+    <table>
+        <tr>
+            <th>预约日期</th>
+            <th>时间</th>
+            <th>服务类型</th>
+            <th>评分</th>
+            <th>反馈</th>
+        </tr>
+        {% for r in reviews %}
+        <tr>
+            <td>{{ r.booking_date }}</td>
+            <td>{{ r.time }}</td>
+            <td>{{ r.service }}</td>
+            <td class="stars">
+                {% for i in range(r.stars) %}★{% endfor %}
+                {% for i in range(5 - r.stars) %}<span style="color:#ccc">★</span>{% endfor %}
+            </td>
+            <td>{{ r.comment if r.comment else '无' }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <div class="back-link">
+        <a href="/dashboard" class="return-btn">← 返回用户主页</a>
+    </div>
+</body>
+</html>
